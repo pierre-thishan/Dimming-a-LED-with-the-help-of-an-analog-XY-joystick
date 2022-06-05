@@ -1,0 +1,32 @@
+/*
+ * HAW Hamburg IE
+ * MCL_3
+ * Task 2_
+ * @author: Thishan Warnakulasooriya
+ * @date: 23.05.2022
+ */
+
+#include <stdio.h>
+#include <stdint.h>
+#include "int_handler.h"
+#include "inc/tm4c1294ncpdt.h"//this is the configuration file of  the circuit  Tiva C Series TM4C1294
+#define STEPS 1e2
+
+void delay() {
+    int j;
+    for (j = 0; j < STEPS; j++);
+}
+
+//here in the interrupt handler, we handle the case what should be done when  the joystick is pressed
+void IntPortMHandler(void) // IRQ number 53, vector number 69
+{
+    GPIO_PORTM_ICR_R |= 0x02;
+    if (TIMER2_TAMATCHR_R == 800 - 1) { //check if the duty cycle is already 95%
+        TIMER2_TAMATCHR_R = 15200 - 1;
+        delay();
+    } else if (TIMER2_TAMATCHR_R <= 15200 - 1) {//if duty cycle is more or equal to than 5% ,
+        //set the highest brightness
+        TIMER2_TAMATCHR_R = 800 - 1;
+        delay();
+    }
+}
